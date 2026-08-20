@@ -1,0 +1,5 @@
+Carregando a topologia e coordenadas inciais da RTA
+--------------------------------
+#INPUT_TYPE amber complexo.top complexo.crd
+#SAVE_NAME rta_complex
+_____________________________

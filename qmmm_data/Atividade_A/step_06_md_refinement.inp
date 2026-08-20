@@ -1,0 +1,13 @@
+Refinamento das estruturas com mopac em região QM maior
+--------------------------------
+#INPUT_TYPE pkl rta_qmmm_opt_am1.pkl
+#RUN_SIMULATION  Energy_Refinement
+#METHODS_SMO am1 pm7
+#SAMPLING_FACTOR 100
+#SOURCE_FOLDER trajectory.ptGeoproduction.ptGeo
+#LOG_FREQUENCY 10
+#SOFTWARE mopac
+#FOLDER MopacRefinement
+#XNBINS 100
+#MAX_NUM_OF_THREADS 8
+_____________________
