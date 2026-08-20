@@ -1,0 +1,717 @@
+\documentclass[a4paper,11pt]{refart}
+
+% -----------------------------------------------------------------------------
+% Minicurso LNCC 2026 -- fonte de trabalho dos tutoriais
+% Esta versão foi reorganizada em duas grandes partes:
+% (I) preparação/reprodução dos dados e (II) atividades executadas em aula.
+% -----------------------------------------------------------------------------
+
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{framed}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+
+\setlist{leftmargin=*}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue}
+\lstset{
+    basicstyle=\small\ttfamily,
+    frame=single,
+    breaklines=true,
+    columns=fullflexible,
+    xleftmargin=1em,
+    xrightmargin=1em,
+    showstringspaces=false,
+    literate=
+      {á}{{\'a}}1 {à}{{\`a}}1 {â}{{\^a}}1 {ã}{{\~a}}1
+      {Á}{{\'A}}1 {À}{{\`A}}1 {Â}{{\^A}}1 {Ã}{{\~A}}1
+      {é}{{\'e}}1 {ê}{{\^e}}1 {É}{{\'E}}1 {Ê}{{\^E}}1
+      {í}{{\'i}}1 {Í}{{\'I}}1
+      {ó}{{\'o}}1 {ô}{{\^o}}1 {õ}{{\~o}}1
+      {Ó}{{\'O}}1 {Ô}{{\^O}}1 {Õ}{{\~O}}1
+      {ú}{{\'u}}1 {Ú}{{\'U}}1
+      {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
+}
+
+% ----------------------------------------------------------------------------
+% Caixas no mesmo espírito do material usado nas edições anteriores.
+% ----------------------------------------------------------------------------
+\newtcblisting{commandshell}{
+    colback=black,
+    colupper=green!70!white,
+    colframe=black!75!black,
+    listing only,
+    listing options={language=sh,basicstyle=\small\ttfamily,breaklines=true},
+    every listing line={\textcolor{red!75!white}{\small\ttfamily\bfseries computer@user:\$ }}
+}
+
+\newtcblisting{shell}{
+    colback=black,
+    colupper=green!70!white,
+    colframe=black!75!black,
+    listing only,
+    listing options={language=sh,basicstyle=\small\ttfamily,breaklines=true}
+}
+
+\newtcblisting{pythoncell}{
+    colback=blue!3,
+    colupper=black,
+    colframe=blue!45!black,
+    listing only,
+    listing options={language=Python,basicstyle=\small\ttfamily,breaklines=true}
+}
+
+\newtcblisting{pymol}{
+    colback=white,
+    colupper=black,
+    colframe=gray!75!black,
+    listing only,
+    listing options={language=sh,basicstyle=\small\ttfamily,breaklines=true}
+}
+
+\newtcolorbox{preparacaobox}[1][]{
+    enhanced,
+    colback=blue!5,
+    colframe=blue!50!black,
+    fonttitle=\bfseries,
+    title={Preparação / reprodução fora da aula},
+    #1
+}
+
+\newtcolorbox{aulabox}[1][]{
+    enhanced,
+    colback=green!6,
+    colframe=green!45!black,
+    fonttitle=\bfseries,
+    title={Executar em aula / Google Colab},
+    #1
+}
+
+\newtcolorbox{comentariobox}[1][]{
+    enhanced,
+    colback=gray!7,
+    colframe=gray!55!black,
+    fonttitle=\bfseries,
+    title={Comentários / observações},
+    #1
+}
+
+\newtcolorbox{interpretacaobox}[1][]{
+    enhanced,
+    colback=yellow!8,
+    colframe=orange!55!black,
+    fonttitle=\bfseries,
+    title={Interpretação guiada},
+    #1
+}
+
+\newtcolorbox{todobox}[1][]{
+    enhanced,
+    colback=red!3,
+    colframe=red!55!black,
+    fonttitle=\bfseries,
+    title={TODO -- completar/validar antes da versão final},
+    #1
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\angstrom}{\AA}
+
+\title{\huge Minicurso LNCC 2026\\[0.4em]
+\Large Estrutura eletrônica, reatividade e descritores quânticos em sistemas biológicos}
+\author{Igor Barden Grillo\\
+\url{https://github.com/bardenChem}}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tcolorbox}[width=0.94\textwidth,colback=yellow!7,colframe=orange!45!black]
+\textbf{Versão de trabalho.} Este material foi organizado para servir simultaneamente como tutorial em PDF e como base para os notebooks do Google Colab. Os cálculos QM/MM, varreduras de coordenada de reação e refinamentos eletrônicos mais dispendiosos não serão executados durante o minicurso. Eles são documentados na Parte I para permitir que os participantes reproduzam os procedimentos posteriormente. Na Parte II, o foco é transformar estruturas eletrônicas já calculadas em informação química usando o PRIMoRDiA 1.50, R e PyMOL.
+\end{tcolorbox}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% =============================================================================
+\section*{Introdução}
+\addcontentsline{toc}{section}{Introdução}
+% =============================================================================
+
+O PRIMoRDiA (\textbf{PRIMoRDiA Macromolecular Reactivity Descriptors Access}) é um programa paralelo, escrito em C++, desenvolvido para o pós-processamento de cálculos de estrutura eletrônica. A versão 1.50 lê resultados de MOPAC, GAMESS, ORCA e Gaussian e calcula descritores globais e locais de reatividade, propriedades eletrostáticas e representações condensadas ou volumétricas. Entre as funcionalidades voltadas para sistemas biológicos estão a agregação dos descritores por resíduo e os modos especiais de análise de trajetórias e caminhos de reação.
+
+O OOCCuPY (\textbf{Object-Oriented Computational Chemistry in Python}) é utilizado neste material para documentar a preparação de sistemas, cálculos QM/MM, varreduras de coordenadas de reação e refinamentos de energia. Durante o minicurso, esses cálculos serão apresentados e discutidos, mas seus resultados serão fornecidos previamente para evitar que o andamento da aula dependa do tempo de execução ou da estabilidade da conexão do Google Colab.
+
+A parte prática do minicurso será organizada em três aplicações:
+
+\begin{enumerate}
+    \item \textbf{Atividade A -- trajetória QM/MM da RTA:} cálculo e análise de descritores ao longo de uma trajetória da Ricin Toxic A chain (RTA) complexada com um pseudo-fragmento de RNA; seleção de estruturas a partir dos descritores e produção de mapas de reatividade.
+    \item \textbf{Atividade B -- caminho de reação da triose-fosfato isomerase (TIM):} reprodução do exemplo clássico do tutorial 5 das versões anteriores do PRIMoRDiA, agora usando a cadeia de preparação disponibilizada nos exemplos atuais do OOCCuPY e o modo \code{reaction} do PRIMoRDiA 1.50.
+    \item \textbf{Atividade C -- família proteína--ligante da HIV protease:} análise estatística de descritores obtidos para complexos do PL-REX, interpretação de PCA e KRLS e comparação eletrônica de complexos selecionados com e sem o ligante.
+\end{enumerate}
+
+\begin{comentariobox}
+A Atividade B utiliza a TIM porque o caminho de reação e a preparação do sistema já estão estabelecidos e reproduzíveis. A futura substituição desse exemplo por um caminho de reação da RTA deverá ser feita apenas quando o mecanismo, as coordenadas de reação e o protocolo QM/MM estiverem suficientemente validados.
+\end{comentariobox}
+
+% =============================================================================
+\section{Parte I -- Preparação e reprodução dos dados}
+% =============================================================================
+
+\begin{preparacaobox}
+Esta parte é material de apoio. O objetivo é mostrar de onde vêm as estruturas eletrônicas usadas nas práticas. Os participantes podem reproduzir essas etapas posteriormente em uma máquina Linux. Durante a escola, os cálculos pesados serão fornecidos prontos.
+\end{preparacaobox}
+
+\subsection{Instalação e teste do OOCCuPY}
+
+O OOCCuPY requer Python 3.8 ou superior. A instalação mais simples indicada no repositório é via PyPI:
+
+\begin{commandshell}
+pip install ooccupy
+\end{commandshell}
+
+Após a instalação, podemos verificar a versão, a configuração e a disponibilidade da interface de linha de comando:
+
+\begin{commandshell}
+ooccupy --version
+ooccupy --help
+ooccupy config --show
+\end{commandshell}
+
+A instalação cria uma estrutura de diretórios no diretório pessoal do usuário, incluindo os exemplos distribuídos com o programa. Em uma instalação padrão, os arquivos podem ser encontrados em \code{\$HOME/.ooccupy/Examples/}.
+
+\begin{todobox}
+Validar, antes do fechamento do PDF, o procedimento definitivo de instalação automática do pDynamo3 junto com o OOCCuPY. O README atual ainda trata o pDynamo3 como dependência separada para as funcionalidades QM/MM. Até essa validação, não prometer uma instalação de uma única etapa no Colab.
+\end{todobox}
+
+\subsection{Como executar um input do OOCCuPY}
+
+A interface de linha de comando permite executar um arquivo de input e escolher uma pasta de projeto:
+
+\begin{commandshell}
+ooccupy pdynamo --input arquivo.input --proj-folder ./meu_projeto
+\end{commandshell}
+
+Os exemplos atuais utilizam um formato de texto simples. Linhas iniciadas por \code{\#} definem o tipo de sistema, o modelo de energia, a região QM, o tipo de simulação e seus parâmetros. Nas subseções seguintes, vamos usar os exemplos distribuídos com o OOCCuPY para documentar o caminho completo usado na Atividade B.
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade B -- preparação completa da TIM com OOCCuPY}
+% -----------------------------------------------------------------------------
+
+\subsubsection{1. Carregar o sistema AMBER, recortar e fixar a região externa}
+
+Os dados distribuídos com o OOCCuPY incluem os arquivos \code{7tim.top} e \code{7tim.crd}. O exemplo \code{Example\_1c\_load\_amber\_prune\_fix.input} carrega o sistema AMBER, usa o átomo C02 do ligante como centro, mantém resíduos em uma esfera de 25~\angstrom{} e fixa a região mais externa a partir de 20~\angstrom{}.
+
+\begin{lstlisting}[caption={OOCCuPY -- carregamento, pruning e fixação da TIM},label={ooccupy_tim_load}]
+Example 1c - Load, prune, and fix an AMBER system
+--------------------------------
+#INPUT_TYPE amber @OOCCUPY_ROOT@/data/7tim.top @OOCCUPY_ROOT@/data/7tim.crd
+#SPHERICAL_PRUNNING *:LIG.248:C02 25.0
+#FIXED_ATOMS *:LIG.248:C02 20.0
+_____________________________
+\end{lstlisting}
+
+Uma execução típica é:
+
+\begin{commandshell}
+ooccupy pdynamo --input $HOME/.ooccupy/Examples/pDynamoWrapper/Example_1c_load_amber_prune_fix.input --proj-folder ./TIM_preparation
+\end{commandshell}
+
+\subsubsection{2. Definir as coordenadas químicas de interesse}
+
+O exemplo \code{Example\_1e\_load\_pkl\_prune\_fix.input} carrega o sistema serializado, mantém o mesmo recorte e registra duas coordenadas químicas. A primeira corresponde à transferência do próton entre o substrato e o glutamato catalítico; a segunda acompanha a região envolvendo a histidina catalítica.
+
+\begin{lstlisting}[caption={OOCCuPY -- definição das coordenadas químicas da TIM},label={ooccupy_tim_rcs}]
+Example 1e - Load, prune, and fix a serialized system
+--------------------------------
+#INPUT_TYPE pkl @OOCCUPY_ROOT@/Examples/pDynamoWrapper/example1CbyInput/7tim.pkl
+#SPHERICAL_PRUNNING *:LIG.248:C02 25.0
+#FIXED_ATOMS *:LIG.248:C02 20.0
+#SET_REACTION_CRD distance yes 3 *:LIG.*:C02 *:LIG.*:H02 *:GLU.164:OE2
+#SET_REACTION_CRD distance yes 3 *:LIG.*:O06 *:HIE.94:HE2 *:HIE.94:NE2
+#SAVE_NAME 7tim_pruned_and_fixed
+_____________________________
+\end{lstlisting}
+
+Quando três átomos são usados em uma coordenada de distância múltipla, o objetivo é acompanhar uma diferença de distâncias, apropriada para processos de formação e quebra de ligação, como uma transferência de próton.
+
+\subsubsection{3. Definir a região QM e otimizar a geometria QM/MM}
+
+O exemplo atual de otimização QM/MM utiliza PM6 e inclui o ligante e os resíduos GLU164, HIE94 e ASN9 na região quântica. A carga total da região QM é -3.
+
+\begin{lstlisting}[caption={OOCCuPY -- otimização de geometria QM/MM da TIM},label={ooccupy_tim_qmmm_opt}]
+Example 3b - QM/MM geometry optimization
+--------------------------------
+#INPUT_TYPE pkl @OOCCUPY_ROOT@/Examples/pDynamoWrapper/example1EbyInput/7tim_pruned_and_fixed.pkl
+#SET_ENERGY_MODEL_QM SMO
+#HAMILTONIAN pm6
+#SOFTWARE internal
+#SET_QMMM_REGION #residue_patterns 4 *:LIG.248:* *:GLU.164:* *:HIE.94:* *:ASN.9:*
+#QC_CHARGE -3
+#RUN_SIMULATION Geometry_Optimization
+#MAX_ITERATIONS 500
+#RMS_GRADIENT 0.1
+#SAVE_PDB no
+#OPT_ALG ConjugatedGradient
+#LOG_FREQUENCY 10
+#SAVE_NAME 7tim_opt_pm6_PF
+____________________________
+\end{lstlisting}
+
+\subsubsection{4. Gerar o primeiro caminho de reação por scan relaxado 1D}
+
+Para a Atividade B usaremos a primeira etapa do mecanismo da TIM, seguindo o exemplo \code{Example\_5b\_relaxed\_scan\_1d\_multiple\_distance.input}. A coordenada é definida pelos átomos C02--H02--OE2 e o scan é dividido em 12 etapas.
+
+\begin{lstlisting}[caption={OOCCuPY -- scan relaxado 1D da transferência de próton na TIM},label={ooccupy_tim_scan}]
+Example 5b - One-dimensional relaxed scan with a multiple-distance coordinate
+--------------------------------
+#INPUT_TYPE pkl @OOCCUPY_ROOT@/Examples/pDynamoWrapper/example3BbyInput/7tim_opt_pm6_PF.pkl
+#RUN_SIMULATION Relaxed_Surface_Scan
+#SET_ENERGY_MODEL_QM SMO
+#HAMILTONIAN pm6
+#SOFTWARE internal
+#SET_QMMM_REGION #residue_patterns 4 *:LIG.248:* *:GLU.164:* *:HIE.94:* *:ASN.9:*
+#QC_CHARGE -3
+#FORCE_CONSTANTS 1000.0 0
+#SET_REACTION_CRD distance yes 3 *:LIG.*:C02 *:LIG.*:H02 *:GLU.164:OE2
+#DINCRE_RC1 0.1
+#NDIMS 1
+#X_NSTEPS 12
+#LOG_FREQUENCY 10
+#MAX_ITERATIONS 1500
+____________________________
+\end{lstlisting}
+
+\begin{interpretacaobox}
+Antes de olhar os descritores, observe a coordenada usada no scan. Quais ligações estão sendo quebradas e formadas? O que significa usar uma diferença de distâncias em vez de uma distância isolada? Em que região da coordenada se espera encontrar uma estrutura semelhante ao estado de transição?
+\end{interpretacaobox}
+
+\subsubsection{5. Refinar as estruturas do caminho no MOPAC}
+
+O exemplo \code{Example\_9b\_energy\_refinement\_mopac.input} usa as geometrias geradas pelo scan e calcula a estrutura eletrônica com diferentes Hamiltonianos semiempíricos no MOPAC. No exemplo atual são solicitados AM1, RM1, PM6 e PM7.
+
+\begin{lstlisting}[caption={OOCCuPY -- refinamento eletrônico do caminho da TIM no MOPAC},label={ooccupy_tim_refinement}]
+Example 9b - Energy refinement with MOPAC
+--------------------------------
+#INPUT_TYPE pkl @OOCCUPY_ROOT@/Examples/pDynamoWrapper/example3BbyInput/7tim_opt_pm6_PF.pkl
+#RUN_SIMULATION Energy_Refinement
+#SET_REACTION_CRD distance yes 3 *:LIG.*:C02 *:LIG.*:H02 *:GLU.164:OE2
+#METHODS_SMO am1 rm1 pm6 pm7
+#SOURCE_FOLDER @OOCCUPY_ROOT@/Examples/pDynamoWrapper/example5BbyInput/ScanTraj.ptGeo
+#LOG_FREQUENCY 10
+#QC_CHARGE -3
+#MULTIPLICITY 1
+#SOFTWARE mopac
+#FOLDER example9BbyInput
+#XNBINS 12
+#MAX_NUM_OF_THREADS 8
+_____________________
+\end{lstlisting}
+
+O produto final desta etapa é o conjunto de estruturas eletrônicas que será entregue aos alunos na aula. Para manter a prática reprodutível e rápida, o minicurso trabalhará com um único Hamiltoniano selecionado para a análise principal, preservando os demais resultados como material para comparação posterior.
+
+\begin{todobox}
+Depois de executar a cadeia completa de exemplos no ambiente que será usado para preparar o curso, registrar aqui: (i) nomes exatos dos arquivos \code{.aux} e \code{.pdb}; (ii) prefixo usado pelo refinamento; (iii) Hamiltoniano escolhido para a prática principal, provavelmente RM1 para manter continuidade com o tutorial anterior; e (iv) índices numéricos dos átomos C02, H02 e OE2 nos PDBs finais que serão usados pelo modo \code{reaction} do PRIMoRDiA 1.50.
+\end{todobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade A -- preparação dos dados da trajetória da RTA}
+% -----------------------------------------------------------------------------
+
+A Atividade A utilizará uma trajetória QM/MM da Ricin Toxic A chain (RTA) complexada com um pseudo-fragmento de RNA. Os cálculos QM/MM e os refinamentos eletrônicos serão fornecidos prontos. O tutorial final deverá documentar toda a cadeia de preparação, mas a versão atual mantém os pontos ainda dependentes dos arquivos definitivos como campos explícitos para preenchimento.
+
+\begin{enumerate}
+    \item Estrutura inicial da RTA e pseudo-fragmento de RNA.
+    \item Parametrização e montagem do sistema clássico.
+    \item Definição do recorte, átomos fixos e região QM para a dinâmica.
+    \item Otimização QM/MM.
+    \item Dinâmica QM/MM e salvamento periódico de frames.
+    \item Refinamento eletrônico dos frames em uma região QM ampliada usando MOPAC.
+    \item Organização dos arquivos de estrutura eletrônica e PDB em uma sequência numerada compatível com o modo \code{trajectory} do PRIMoRDiA.
+\end{enumerate}
+
+\begin{todobox}
+Inserir os inputs reais do OOCCuPY usados para a RTA assim que os arquivos do curso forem congelados. Também registrar o número final de frames, o índice inicial da sequência, os resíduos acompanhados na análise estatística e o padrão de nomes dos arquivos MOPAC/PDB.
+\end{todobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade C -- preparação dos dados da HIV protease}
+% -----------------------------------------------------------------------------
+
+Os dados da Atividade C serão derivados da família HIV protease da base PL-REX. Os cálculos eletrônicos completos serão preparados antes da aula. O tempo de cálculo do PRIMoRDiA para toda a família deverá ser medido no Google Colab; caso o tempo seja incompatível com a aula, os alunos receberão a matriz de descritores pronta e a prática começará diretamente na análise estatística.
+
+\begin{todobox}
+Inserir, após o benchmark: lista final de complexos, nomes dos arquivos, protocolo semiempírico, input do PRIMoRDiA usado para os cálculos proteína--ligante, matriz final de descritores e nomes dos dois complexos escolhidos para a comparação estrutural proteína $\pm$ ligante.
+\end{todobox}
+
+\newpage
+
+% =============================================================================
+\section{Parte II -- Atividades executadas em aula}
+% =============================================================================
+
+\begin{aulabox}
+A partir deste ponto, todas as etapas são pensadas para execução no Google Colab. Os cálculos QM/MM e refinamentos MOPAC já estarão disponíveis. O objetivo é aprender a montar e executar inputs do PRIMoRDiA 1.50, analisar os resultados, gerar scripts R e produzir representações estruturais dos descritores.
+\end{aulabox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade Zero -- preparar o ambiente no Google Colab}
+% -----------------------------------------------------------------------------
+
+\subsubsection{Instalar as dependências de compilação}
+
+A versão 1.50 utiliza CMake, C++17, OpenMP, Eigen, Boost.Iostreams e zlib. Em uma sessão limpa do Colab, execute:
+
+\begin{shell}
+!apt-get update -qq
+!apt-get install -y build-essential cmake libeigen3-dev libboost-iostreams-dev zlib1g-dev
+\end{shell}
+
+\subsubsection{Baixar e compilar o PRIMoRDiA 1.50}
+
+O repositório utilizado no minicurso é \url{https://github.com/bardenChem/PRIMoRDiA_1.50v}.
+
+\begin{shell}
+!git clone https://github.com/bardenChem/PRIMoRDiA_1.50v.git
+%cd PRIMoRDiA_1.50v
+!cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+!cmake --build build --parallel 2
+!./PRIMoRDiA_1.50v --help
+\end{shell}
+
+No build \code{Release}, o executável é colocado na raiz do repositório. Se a última linha imprimir a ajuda do programa, a compilação básica foi concluída corretamente.
+
+\subsubsection{Baixar os dados do minicurso}
+
+\begin{todobox}
+O repositório \code{bardenChem/PRIMoRDiA\_1.50v} contém atualmente o código-fonte e o README da versão 1.50, mas ainda não contém os diretórios de dados específicos deste minicurso. Substituir a célula abaixo pelo endereço definitivo do repositório/diretório de materiais quando os inputs forem publicados.
+\end{todobox}
+
+\begin{shell}
+# Exemplo de estrutura da célula que entrará no notebook final:
+# !git clone <URL_DO_REPOSITORIO_DO_MINICURSO>.git course_data
+# %cd course_data
+# !find . -maxdepth 2 -type f | head -n 40
+\end{shell}
+
+\begin{interpretacaobox}
+Antes de prosseguir, identifique três tipos de arquivo: (1) arquivo de estrutura eletrônica, por exemplo \code{.aux}; (2) estrutura PDB correspondente; e (3) arquivo de input do PRIMoRDiA. Por que o PRIMoRDiA precisa do PDB para as análises por resíduo?
+\end{interpretacaobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade A -- descritores ao longo de uma trajetória QM/MM da RTA}
+% -----------------------------------------------------------------------------
+
+\subsubsection{1. Entender o modo \texttt{trajectory}}
+
+No PRIMoRDiA 1.50, o modo \code{trajectory} recebe um molde de nome e expande automaticamente uma sequência numerada de frames. A opção 3 é recomendada para macromoléculas porque associa cada estrutura eletrônica ao PDB correspondente e permite condensar os descritores por resíduo.
+
+O input final terá a forma:
+
+\begin{lstlisting}[caption={Modelo de input do PRIMoRDiA 1.50 para a trajetória da RTA},label={primordia_rta_traj}]
+#RT trajectory
+#PR gridsize 0 threads 4 band_method BD bandgap 5 eband 1 Rscript
+#TRJ frames <N_FRAMES> start <START>
+#TRJ residues <RES_ARG> <RES_GLU> <RES_SUBSTRATO>
+3 frame.aux false frame.pdb mopac 0 0 0 0
+\end{lstlisting}
+
+\begin{comentariobox}
+No modo \code{trajectory}, a linha \code{3 frame.aux ... frame.pdb ...} é um molde. Se \code{start 1} e \code{frames 100}, o programa procurará \code{frame1.aux}, \code{frame1.pdb}, ..., \code{frame100.aux}, \code{frame100.pdb}. Para o fluxo em lote atual, utilizar \code{gridsize 0}. Os mapas estruturais dos frames selecionados serão gerados posteriormente em cálculos individuais no modo \code{normal}.
+\end{comentariobox}
+
+\subsubsection{2. Criar o input no Colab}
+
+A célula abaixo ilustra a estratégia que será usada nos notebooks: criar o arquivo diretamente no ambiente do Colab para que os alunos visualizem e modifiquem os parâmetros.
+
+\begin{pythoncell}
+from pathlib import Path
+
+input_rta = """#RT trajectory
+#PR gridsize 0 threads 4 band_method BD bandgap 5 eband 1 Rscript
+#TRJ frames <N_FRAMES> start <START>
+#TRJ residues <RES_ARG> <RES_GLU> <RES_SUBSTRATO>
+3 frame.aux false frame.pdb mopac 0 0 0 0
+"""
+
+Path("primordia_rta_trajectory.input").write_text(input_rta)
+print(input_rta)
+\end{pythoncell}
+
+\begin{todobox}
+Substituir os campos entre \code{< >} pelos valores definitivos da trajetória. Esta célula deve estar completamente preenchida no notebook distribuído aos alunos.
+\end{todobox}
+
+\subsubsection{3. Executar o PRIMoRDiA}
+
+\begin{shell}
+!./PRIMoRDiA_1.50v -f primordia_rta_trajectory.input -np 4 -verbose
+\end{shell}
+
+Ao final, inspecione o log e os scripts R gerados:
+
+\begin{shell}
+!tail -n 40 primordia.log
+!ls -lh *.R 2>/dev/null || true
+!ls -lh *.rslrd 2>/dev/null | head
+\end{shell}
+
+\subsubsection{4. Executar os scripts R e analisar os descritores ao longo da dinâmica}
+
+O nome exato dos scripts será registrado depois que o workflow final da RTA for congelado. Em vez de pressupor um nome, primeiro listaremos os arquivos gerados.
+
+\begin{shell}
+!ls -1 *.R
+# Depois de identificar o script desejado:
+# !Rscript <script_de_analise_da_trajetoria.R>
+\end{shell}
+
+\begin{interpretacaobox}
+\textbf{Perguntas para discussão}
+\begin{enumerate}
+    \item Quais resíduos apresentam maior variação dos descritores durante a trajetória?
+    \item As flutuações geométricas produzem flutuações equivalentes em todos os descritores?
+    \item Quais descritores parecem mais úteis para acompanhar a química esperada para o sítio ativo?
+    \item Uma estrutura geometricamente frequente também precisa ser a estrutura eletronicamente mais representativa?
+\end{enumerate}
+\end{interpretacaobox}
+
+\subsubsection{5. Selecionar um frame com base nos descritores}
+
+Os resultados da trajetória serão usados para comparar duas estratégias de amostragem: uma estrutura representativa da distribuição geométrica e uma estrutura selecionada a partir da distribuição dos descritores de reatividade.
+
+\begin{todobox}
+Inserir aqui a célula definitiva de análise/amostragem quando os scripts R ou Python usados na prática forem congelados. O material deve produzir explicitamente o número do frame selecionado por descritores e o número do frame estruturalmente mais frequente.
+\end{todobox}
+
+\subsubsection{6. Recalcular os frames selecionados no modo \texttt{normal} e gerar scripts PyMOL}
+
+Para gerar representações individuais e facilitar imagens de publicação, os dois frames selecionados serão tratados separadamente no modo \code{normal}. Um modelo de input é:
+
+\begin{lstlisting}[caption={Modelo de input normal para um frame selecionado},label={primordia_selected_frame}]
+#RT normal
+#PR gridsize 0 threads 4 band_method EW bandgap 5 eband 2 pymols
+3 frame_SELECIONADO.aux false frame_SELECIONADO.pdb mopac 0 0 0 0
+\end{lstlisting}
+
+\begin{shell}
+!./PRIMoRDiA_1.50v -f primordia_selected_frame.input -verbose
+!ls -1 *.pym 2>/dev/null || true
+\end{shell}
+
+\subsubsection{7. Produzir imagens no PyMOL}
+
+O PRIMoRDiA pode gerar scripts de PyMOL quando a palavra-chave \code{pymols} é usada. Em uma máquina com interface gráfica, o script pode ser carregado no PyMOL. Para processamento não interativo, depois de validar a instalação no Colab, será usada a execução em modo batch.
+
+\begin{pymol}
+# Interface grafica:
+@arquivo_pymols_pdb.pym
+
+# Linha de comando / batch (validar no ambiente final):
+pymol -cq arquivo_pymols_pdb.pym
+\end{pymol}
+
+Para imagens em qualidade de publicação, o fluxo básico é ajustar a representação, a faixa de cores e então renderizar:
+
+\begin{pymol}
+set ray_trace_mode, 1
+set antialias, 2
+# Exemplo: ajustar minimum/maximum ao descritor analisado
+spectrum b, white_yellow_orange_red_black, minimum=0.1, maximum=0.2
+ray 1800, 1200
+png mapa_reatividade.png, dpi=300
+\end{pymol}
+
+\begin{interpretacaobox}
+Compare os dois frames selecionados. A diferença é apenas geométrica ou a distribuição espacial da reatividade também muda? Localize no mapa os resíduos catalíticos e os átomos do pseudo-substrato diretamente envolvidos na química proposta.
+\end{interpretacaobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade B -- reatividade ao longo da primeira etapa da reação da TIM}
+% -----------------------------------------------------------------------------
+
+\subsubsection{1. Organizar os arquivos refinados}
+
+O conjunto de dados será derivado do scan 1D descrito na Parte I. Para manter continuidade com o tutorial histórico, podemos selecionar os resultados RM1 do refinamento MOPAC e renomeá-los para uma sequência simples antes de executar o PRIMoRDiA.
+
+\begin{shell}
+# Modelo; ajustar ao prefixo exato produzido pelo OOCCuPY.
+for file in *_rm1.aux; do
+    mv "$file" "${file/_rm1.aux/.aux}"
+done
+
+for file in *_rm1.pdb; do
+    mv "$file" "${file/_rm1.pdb/.pdb}"
+done
+\end{shell}
+
+\begin{todobox}
+Confirmar o padrão real dos nomes após executar \code{Example\_9b\_energy\_refinement\_mopac.input}. Se o OOCCuPY já produzir uma sequência compatível com o modo \code{reaction}, retirar esta etapa de renomeação.
+\end{todobox}
+
+\subsubsection{2. Montar o input \texttt{reaction} do PRIMoRDiA 1.50}
+
+O modo \code{reaction} precisa saber o número de pontos do caminho e os índices numéricos dos átomos que definem a coordenada. O scan atual do OOCCuPY usa 12 pontos e a coordenada química C02--H02--OE2.
+
+\begin{lstlisting}[caption={Modelo de input PRIMoRDiA 1.50 para a reação da TIM},label={primordia_tim_reaction}]
+#RT reaction
+#PR gridsize 0 threads 4 band_method BD bandgap 5 eband 1 Rscript
+#Reaction dimX 12 start 0
+#Reaction RC1 <ATOM_C02> <ATOM_H02> <ATOM_OE2>
+#TRJ residues <RES_HIS> <RES_GLU> <RES_SUBSTRATO>
+3 frame.aux false frame.pdb mopac 0 0 0 0
+\end{lstlisting}
+
+Uma coordenada com três átomos é interpretada pelo PRIMoRDiA como uma diferença de distâncias, \(d(1,2)-d(2,3)\). Portanto, neste exemplo, ela acompanha simultaneamente a quebra da ligação C--H e a formação da ligação H--O.
+
+\begin{todobox}
+Preencher os índices numéricos reais dos átomos e resíduos após congelar os PDBs refinados. Não reutilizar automaticamente os índices do tutorial antigo, pois a enumeração pode mudar quando os arquivos são regenerados pelo workflow atual do OOCCuPY.
+\end{todobox}
+
+\subsubsection{3. Executar o cálculo}
+
+\begin{shell}
+!./PRIMoRDiA_1.50v -f primordia_tim_reaction.input -np 4 -verbose
+!tail -n 40 primordia.log
+!ls -1 *.R 2>/dev/null || true
+\end{shell}
+
+\subsubsection{4. Gerar e interpretar os gráficos da reação}
+
+\begin{shell}
+!ls -1 *.R
+# Executar o script identificado para o caminho de reação:
+# !Rscript <arquivo_reaction_analysis.R>
+\end{shell}
+
+\begin{interpretacaobox}
+\textbf{Perguntas para a análise do perfil}
+\begin{enumerate}
+    \item Em que ponto do scan a energia apresenta um máximo ou uma mudança de regime?
+    \item A dureza global e a moleza global acompanham o perfil energético?
+    \item Como a densidade eletrônica e a carga parcial mudam no carbono do substrato, no hidrogênio transferido e no oxigênio do glutamato?
+    \item Os descritores associados a interações duro--duro e os descritores associados a processos mole--mole apontam para a mesma região do caminho?
+    \item Que conclusão química pode ser obtida dos descritores que não aparece diretamente no gráfico de energia?
+\end{enumerate}
+\end{interpretacaobox}
+
+\subsubsection{5. Mapas de reatividade do reagente e da região de transição}
+
+Depois de identificar um ponto inicial e um ponto próximo ao máximo energético, os dois frames serão recalculados individualmente em modo \code{normal} com \code{pymols}, como feito na Atividade A.
+
+\begin{interpretacaobox}
+Compare espacialmente a reatividade nos dois estados. O objetivo não é apenas localizar onde o descritor é grande, mas observar \textbf{como sua distribuição muda} enquanto o próton deixa o substrato e se aproxima do glutamato catalítico.
+\end{interpretacaobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Atividade C -- descritores e tendências na família HIV protease}
+% -----------------------------------------------------------------------------
+
+\subsubsection{1. Decisão de execução no Colab}
+
+Antes do minicurso será feito um benchmark do tempo necessário para calcular os descritores da família HIV protease no Colab.
+
+\begin{itemize}
+    \item \textbf{Se o tempo for seguro:} os alunos executam o PRIMoRDiA para o conjunto selecionado.
+    \item \textbf{Se o tempo for longo:} a matriz final de descritores é carregada diretamente e a aula começa na análise estatística.
+\end{itemize}
+
+\begin{todobox}
+Inserir aqui o input definitivo do PRIMoRDiA para a família HIV protease depois do benchmark. Registrar também o número de complexos e o tempo medido em sessão limpa do Colab.
+\end{todobox}
+
+\subsubsection{2. Análise estatística automática em R}
+
+Os scripts da prática serão organizados para produzir, no mínimo:
+
+\begin{enumerate}
+    \item inspeção e filtragem das variáveis;
+    \item PCA dos descritores;
+    \item seleção/identificação das variáveis mais associadas aos principais componentes;
+    \item regressão KRLS para explorar tendências do conjunto;
+    \item gráficos previstos versus experimentais e diagnósticos relevantes.
+\end{enumerate}
+
+\begin{shell}
+# Estrutura da célula; o nome definitivo será inserido no material final.
+# !Rscript analysis_hiv_protease.R
+\end{shell}
+
+\begin{interpretacaobox}
+\textbf{Leitura do PCA}
+\begin{enumerate}
+    \item Quanto da variância é explicada por PC1, PC2 e PC3?
+    \item Quais descritores possuem maior contribuição para os componentes principais?
+    \item Há agrupamentos naturais ou gradientes associados à afinidade experimental?
+\end{enumerate}
+\end{interpretacaobox}
+
+\begin{interpretacaobox}
+\textbf{Leitura do KRLS}
+\begin{enumerate}
+    \item O ajuste identifica alguma relação não linear entre os descritores e a afinidade?
+    \item Quais descritores parecem carregar a tendência mais relevante?
+    \item Por que esse exercício deve ser interpretado como identificação de tendências do conjunto e não como uma função de score validada para a família?
+\end{enumerate}
+\end{interpretacaobox}
+
+\subsubsection{3. Comparar dois complexos proteína--ligante}
+
+Dois complexos serão selecionados previamente para comparação. As imagens básicas serão fornecidas prontas para não consumir tempo de aula, mas os alunos deverão interpretar as diferenças entre a proteína no complexo e a referência sem o ligante.
+
+\begin{todobox}
+Inserir os identificadores dos dois complexos, os descritores escolhidos para a comparação e as figuras finais. Se houver tempo, incluir também uma célula opcional para regenerar os scripts PyMOL correspondentes.
+\end{todobox}
+
+\begin{interpretacaobox}
+A presença do ligante altera apenas a geometria local ou também modifica a distribuição eletrônica dos resíduos do sítio? Os descritores que aparecem associados à afinidade na análise multivariada também produzem diferenças interpretáveis nos complexos individuais?
+\end{interpretacaobox}
+
+% =============================================================================
+\section{Checklist para transformar este PDF em notebooks do Colab}
+% =============================================================================
+
+Cada subseção operacional deverá ser convertida mantendo a mesma sequência didática:
+
+\begin{enumerate}
+    \item \textbf{Objetivo da célula.}
+    \item \textbf{Arquivos necessários.}
+    \item \textbf{Célula de execução.}
+    \item \textbf{Saída esperada.}
+    \item \textbf{Célula de diagnóstico/checkpoint.}
+    \item \textbf{Figura ou tabela resultante.}
+    \item \textbf{Bloco de interpretação.}
+\end{enumerate}
+
+\begin{comentariobox}
+Os notebooks finais devem evitar qualquer etapa em que uma falha de rede ou um cálculo QM/MM longo impeça o avanço da aula. Para cada atividade, manter uma pasta com os outputs esperados e um ponto de recuperação imediatamente antes da análise.
+\end{comentariobox}
+
+% =============================================================================
+\section*{Repositórios e documentação}
+\addcontentsline{toc}{section}{Repositórios e documentação}
+% =============================================================================
+
+\begin{itemize}
+    \item PRIMoRDiA 1.50: \url{https://github.com/bardenChem/PRIMoRDiA_1.50v}
+    \item OOCCuPY: \url{https://github.com/bardenChem/OOCCuPY}
+    \item Exemplos do OOCCuPY usados na preparação da TIM: \code{Examples/pDynamoWrapper/Example\_1c}, \code{Example\_1e}, \code{Example\_3b}, \code{Example\_5b} e \code{Example\_9b}.
+\end{itemize}
+
+\end{document}
