@@ -1,0 +1,16 @@
+#RT normal 
+#PR eband 2 Rscript smallest_pro_lig_dist 2.0 
+#PR band_method EW threads 6
+3 complex_1HSG.aux.gz none 0 0  complex_1HSG.pdb mopac  0 0 0 0 EW 
+3 complex_1HXW.aux.gz none 0 0  complex_1HXW.pdb mopac  0 0 0 0 EW 
+3 complex_1IZH.aux.gz none 0 0  complex_1IZH.pdb mopac  0 0 0 0 EW 
+3 complex_1T3R.aux.gz none 0 0  complex_1T3R.pdb mopac  0 0 0 0 EW 
+3 complex_2Q54.aux.gz none 0 0  complex_2Q54.pdb mopac  0 0 0 0 EW 
+3 complex_2Q55.aux.gz none 0 0  complex_2Q55.pdb mopac  0 0 0 0 EW 
+3 complex_2Q5K.aux.gz none 0 0  complex_2Q5K.pdb mopac  0 0 0 0 EW 
+3 complex_3EKX.aux.gz none 0 0  complex_3EKX.pdb mopac  0 0 0 0 EW 
+3 complex_3EL1.aux.gz none 0 0  complex_3EL1.pdb mopac  0 0 0 0 EW 
+3 complex_3NU3.aux.gz none 0 0  complex_3NU3.pdb mopac  0 0 0 0 EW 
+3 complex_3OXC.aux.gz none 0 0  complex_3OXC.pdb mopac  0 0 0 0 EW 
+3 complex_5HVP.aux.gz none 0 0  complex_5HVP.pdb mopac  0 0 0 0 EW 
+3 protein.aux.gz none 0 0  protein.pdb mopac  0 0 0 0 EW 

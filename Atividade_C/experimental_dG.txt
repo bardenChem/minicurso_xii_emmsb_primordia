@@ -1,0 +1,15 @@
+# Experimental affinity converted to binding free energy
+# Values in kcal/mol
+1HSG                             -13.618
+1HXW                             -14.858
+1IZH                             -14.657
+1T3R                             -15.478
+2Q54                             -12.366
+2Q55                             -11.929
+2Q5K                             -14.749
+3EKX                             -13.940
+3EL1                             -14.578
+3NU3                             -13.377
+3OXC                             -14.273
+5HVP                              -9.520
+
