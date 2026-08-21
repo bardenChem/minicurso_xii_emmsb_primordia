@@ -1,16 +1,19 @@
 Otimização QM/MM da triosefosfato isomerase
 --------------------------------
-#INPUT_TYPE pkl 7tim_pruned_fix_opt.pkl
+#INPUT_TYPE pkl step02/7tim_pruned_fix_opt.pkl
 #SET_ENERGY_MODEL_QM SMO
-#HAMILTONIAN am1
+#HAMILTONIAN pm6
 #SOFTWARE internal
 #SET_QMMM_REGION #residue_patterns 4 *:LIG.248:* *:GLU.164:* *:HIE.94:* *:ASN.9:*
-#QC_CHARGE -3
+#CORRECT_QMMM_CHARGES yes
 #RUN_SIMULATION  Geometry_Optimization
 #MAX_ITERATIONS 900
 #RMS_GRADIENT 0.1
 #SAVE_PDB yes
 #OPT_ALG ConjugatedGradient
 #LOG_FREQUENCY 10
+#TRAJECTORY_NAME geometry_optimization.ptGeo
+#SAVE_FREQUENCY 10
+#SAVE_FORMAT .dcd
 #SAVE_NAME 7tim_qcmm_opt
 ____________________________

@@ -1,15 +1,15 @@
 Roda scan unidimensional 
 --------------------------------
-#INPUT_TYPE pkl 7tim_qcmm_opt.pkl
+#INPUT_TYPE pkl step03/7tim_qcmm_opt.pkl
 #RUN_SIMULATION Relaxed_Surface_Scan
 #SET_QMMM_REGION #residue_patterns 4 *:LIG.248:* *:GLU.164:* *:HIE.94:* *:ASN.9:*
 #CORRECT_QMMM_CHARGES yes
-#FORCE_CONSTANTS 800.0 0 
-#SET_REACTION_CRD distance yes 3  *:LIG.*:C02 *:LIG.*:H02 *:GLU.164:OE2
+#FORCE_CONSTANTS 1000.0 0 
+#SET_REACTION_CRD distance no 2  *:LIG.*:C02 *:LIG.*:H02 
 #DINCRE_RC1  0.1
+#SAVE_PDB yes
 #NDIMS 1
 #X_NSTEPS 12
 #LOG_FREQUENCY 10
 #MAX_ITERATIONS 1500
-
 ____________________________
