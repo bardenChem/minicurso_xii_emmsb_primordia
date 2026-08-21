@@ -1,0 +1,17 @@
+Refinamento das estruturas com mopac em região QM maior
+--------------------------------
+#INPUT_TYPE pkl step04/rta_qmmm_opt_am1.pkl
+#RUN_SIMULATION  Energy_Refinement
+#SET_ENERGY_MODEL_QM SMO
+#HAMILTONIAN rm1
+#SET_QMMM_REGION #center_atom *:WAT.327:O 5.0
+#METHODS_SMO am1 pm7
+#SOURCE_FOLDER MD_sampled.ptGeo
+#LOG_FREQUENCY 10
+#CORRECT_QMMM_CHARGES yes
+#SOFTWARE mopac
+#FOLDER step6/mopacRef
+#XNBINS 51
+#MOPAC_PATH /opt/mopac/bin/mopac
+#MAX_NUM_OF_THREADS 8
+_____________________

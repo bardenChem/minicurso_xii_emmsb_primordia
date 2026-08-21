@@ -1,0 +1,17 @@
+Configura região QM e otimiza 
+--------------------------------
+#INPUT_TYPE pkl step03/rta_complex_pruned_and_fixed.pkl
+#SET_ENERGY_MODEL_QM SMO
+#HAMILTONIAN am1
+#SOFTWARE internal
+#SET_QMMM_REGION #residue_patterns 4 *:ARG.176:* *:C2X.260:* *:GLU.173:* *:WAT.327:*
+#QC_CHARGE 0
+#RUN_SIMULATION  Geometry_Optimization
+#MAX_ITERATIONS 1000
+#RMS_GRADIENT 0.1
+#SAVE_PDB yes
+#OPT_ALG ConjugatedGradient
+#LOG_FREQUENCY 10
+#CORRECT_QMMM_CHARGES yes
+#SAVE_NAME rta_qmmm_opt_am1
+_____________________________
