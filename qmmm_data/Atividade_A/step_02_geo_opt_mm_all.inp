@@ -1,6 +1,6 @@
 Minimização/Relaxamento da estrutura incial
 --------------------------------
-#INPUT_TYPE pkl rta_complex.pkl
+#INPUT_TYPE pkl step01/rta_complex.pkl
 #RUN_SIMULATION  Geometry_Optimization
 #MAX_ITERATIONS 1000
 #RMS_GRADIENT 1.0

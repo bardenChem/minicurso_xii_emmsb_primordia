@@ -1,6 +1,6 @@
 Faz recorte esférico de raio de 30 angstrons e fixa os átomos depois de 22 angstrons e otimiza.  
 --------------------------------
-#INPUT_TYPE pkl rta_complex_mm_opt.pkl
+#INPUT_TYPE pkl step02/rta_complex_mm_opt.pkl
 #SPHERICAL_PRUNNING *:ARG.176:NH2 30.0
 #FIXED_ATOMS *:ARG.176:NH2 22.0
 #RUN_SIMULATION  Geometry_Optimization

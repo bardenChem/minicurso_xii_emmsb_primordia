@@ -1,6 +1,6 @@
-Roda uma Dinamica Molecular QM/MM exploratório para refinamento posterior 
+Roda uma Dinamica Molecular QM/MM exploratório para refinamento posterior  (execução demorada) 
 --------------------------------
-#INPUT_TYPE pkl rta_qmmm_opt_am1.pkl
+#INPUT_TYPE pkl step04/rta_qmmm_opt_am1.pkl
 #RUN_SIMULATION  Molecular_Dynamics
 #MD_METHOD LeapFrog
 #PRESSURE 1.0
@@ -11,12 +11,14 @@ Roda uma Dinamica Molecular QM/MM exploratório para refinamento posterior
 #TIME_STEP 0.001
 #COLLISION_FREQ 25.0
 #INITIAL_TEMPERATURE 20.0
-#EQUILIBRATION_STEPS 20000
-#HEATING_STEPS 10000
+#EQUILIBRATION_STEPS 10000
+#HEATING_STEPS 5000
 #PRODUCTION_STEPS 50000
 #SAMPLING_HEATING 200
 #SAMPLING_EQUILIBRATION 200
-#SAMPLING_PRODUCTION 1000
+#SAMPLING_PRODUCTION 500
 #TEMPERATURE 315.15
 #LOG_FREQUENCY 10
+#TRAJECTORY_NAME rta_qmmm_md_am1
+#SAVE_FORMAT .dcd
 #SAVE_NAME rta_qmmm_md_am1

@@ -1,6 +1,6 @@
 Configura região QM e otimiza 
 --------------------------------
-#INPUT_TYPE pkl rta_complex_pruned_and_fixed.pkl
+#INPUT_TYPE pkl step03/rta_complex_pruned_and_fixed.pkl
 #SET_ENERGY_MODEL_QM SMO
 #HAMILTONIAN am1
 #SOFTWARE internal
